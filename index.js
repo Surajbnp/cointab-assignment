@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
   res.send("HomePage");
 });
 
+// authentication route
 app.use("/auth", signupRoute);
 
 
