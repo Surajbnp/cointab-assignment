@@ -43,6 +43,9 @@ signupRoute.post("/login", async (req, res) => {
     const hash = user.password;
     let isValid = await bcrypt.compareSync(password, hash);
     if (isValid) {
+
+      // genreating the random token after successfully login using JWT 
+
       let token = jwt.sign({ userId: user._id }, process.env.SECRET);
       res.status(200).send({ msg: "login successfully", useremail : user.email ,token: token});
     } else {
