@@ -1,13 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const connection = require("./database/server")
-const {signupRoute} = require("./routes/Authentication")
+const connection = require("./database/server");
+const { signupRoute } = require("./routes/Authentication");
 
 app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 8080;
-
 
 app.get("/", (req, res) => {
   res.send("HomePage");
@@ -15,7 +14,6 @@ app.get("/", (req, res) => {
 
 // authentication route
 app.use("/auth", signupRoute);
-
 
 app.listen(PORT, async () => {
   try {
