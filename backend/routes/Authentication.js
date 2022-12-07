@@ -49,7 +49,10 @@ signupRoute.post("/login", async (req, res) => {
       // genreating the random token after successfully login using JWT
 
       let token = jwt.sign({ userId: user._id }, process.env.SECRET);
-      await SignupModel.updateOne({ email }, { $set: { maxAttempt: 5 } });
+      await SignupModel.updateOne(
+        { email },
+        { $set: { maxAttempt: 5, blockedTill: null } }
+      );
       res.status(200).send({
         msg: "login successfully",
         useremail: user.email,
@@ -61,13 +64,38 @@ signupRoute.post("/login", async (req, res) => {
           { email },
           { $set: { maxAttempt: totalattempt - 1 } }
         );
-        res.status(404).send({ msg: "Invalid Credential", maxAttempt : totalattempt - 1 });
-      }else{
-        res.send({msg : "user blocked"})
+        res
+          .status(404)
+          .send({ msg: "Invalid Credential", maxAttempt: totalattempt - 1 });
+      } else {
+        const timestamp = new Date().getTime();
+        const date = new Date(timestamp);
+        let today = date.toLocaleString("sv");
+        date.setDate(date.getDate() + 1);
+        let tommarow = date.toLocaleString("sv");
+
+        // unblocking user after 24 Hours ends
+
+        if (today === tommarow) {
+          await SignupModel.updateOne(
+            { email },
+            { $set: { maxAttempt: 5, blockedTill: null } }
+          );
+        }
+
+        // blocking user for 24 hours
+        else {
+          await SignupModel.updateOne(
+            { email },
+            { $set: { blockedTill: tommarow } }
+          );
+        }
+
+        res.send({ msg: "user blocked", blockedTill: user.blockedTill });
       }
     }
   } else {
-    res.status(404).send({ msg: "Invalid Credential" });
+    res.status(404).send({ msg: "No user found" });
   }
 });
 
