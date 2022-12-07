@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Input, Button, Text, Spinner } from "@chakra-ui/react";
+import { Box, Input, Button, Text, Spinner, color } from "@chakra-ui/react";
 import styles from "../styles/login.module.css";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -25,14 +25,20 @@ const Login = () => {
         payload
       )
       .then((res) => {
-        setMsg(res.data)
-        setLoader(false)
-        localStorage.setItem("cointab_token", res.data.token);
-        localStorage.setItem("useremail", res.data.useremail)
-        navigate("/")
+          setLoader(false);
+          localStorage.setItem("cointab_token", res.data.token);
+          localStorage.setItem("useremail", res.data.useremail);
+          navigate("/");
       })
       .catch((err) => {
-        setLoader(false)
+        setMsg(err.response.data);
+        setLoader(false);
+        if(!msg.blockedTill){
+          toast.error("Invalid Credentials",{
+            theme : "colored",
+            autoClose : 1000
+          })
+        }
       });
   };
 
@@ -58,7 +64,11 @@ const Login = () => {
             />
           </Box>
           {msg.blockedTill ? (
-            <Text fontSize='12px' color='red' p='5px'>{`user blocked till ${msg.blockedTill}`}</Text>
+            <Text
+              fontSize="14px"
+              color="red"
+              p="5px"
+            >{`user blocked till ${msg.blockedTill}`}</Text>
           ) : null}
 
           <Box textAlign={"center"}>

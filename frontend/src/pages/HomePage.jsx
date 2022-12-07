@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 const HomePage = () => {
   let token = localStorage.getItem("cointab_token");
   let useremail = localStorage.getItem("useremail");
-  const [email, setEmail] = useState();
   const navigate = useNavigate();
 
   const handleLogout = () => {
