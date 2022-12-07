@@ -9,6 +9,10 @@ app.use(express.json());
 const PORT = process.env.PORT || 8080;
 
 app.get("/", (req, res) => {
+
+  let sec = 86400;
+  
+
   res.send("HomePage");
 });
 

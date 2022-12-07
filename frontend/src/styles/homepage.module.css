@@ -1,0 +1,28 @@
+.container{
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 600;
+    font-family: "Space Grotesk", sans-serif;
+}
+
+.container > div {
+    width: 350px;
+    height: 45vh;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+}
+
+.profile{
+    width: 20%;
+    border-radius: 50%;
+    height: 18%;
+    margin:  auto;
+}

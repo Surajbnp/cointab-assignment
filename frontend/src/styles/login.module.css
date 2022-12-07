@@ -1,0 +1,28 @@
+.container{
+    font-family: "Space Grotesk", sans-serif;
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.container > div {
+    width: 350px;
+    height: 45vh;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 30px;
+}
+
+form > div{
+    margin-top: 8px;
+}
+
+form > div:nth-child(3){
+    margin-top: 20px;
+}
