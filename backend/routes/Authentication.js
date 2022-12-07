@@ -39,19 +39,23 @@ signupRoute.post("/signup", async (req, res) => {
 signupRoute.post("/login", async (req, res) => {
   let { email, password } = req.body;
   const user = await SignupModel.findOne({ email });
-  let totalattempt = Number(user.maxAttempt);
-  let time = new Date();
+  let val = Number(user.maxAttempt);
+  const timestamp = new Date().getTime();
+  const date = new Date(timestamp);
+  let today = date.toLocaleString("sv");
+  date.setDate(date.getDate() + 1);
+  let tommarow = date.toLocaleString("sv");
 
   if (user) {
     const hash = user.password;
     let isValid = await bcrypt.compareSync(password, hash);
-    if (isValid) {
+    if (isValid || today == tommarow) {
       // genreating the random token after successfully login using JWT
 
       let token = jwt.sign({ userId: user._id }, process.env.SECRET);
       await SignupModel.updateOne(
         { email },
-        { $set: { maxAttempt: 5, blockedTill: null } }
+        { $set: { maxAttempt: 0, blockedTill: null } }
       );
       res.status(200).send({
         msg: "login successfully",
@@ -59,39 +63,11 @@ signupRoute.post("/login", async (req, res) => {
         token: token,
       });
     } else {
-      if (totalattempt > 0) {
-        await SignupModel.updateOne(
-          { email },
-          { $set: { maxAttempt: totalattempt - 1 } }
-        );
-        res
-          .status(404)
-          .send({ msg: "Invalid Credential", maxAttempt: totalattempt - 1 });
+      await SignupModel.updateOne({ email }, { $set: { maxAttempt: val + 1 } });
+      if (val === 5) {
+        res.send({ msg: "user blocked", blockedTill: tommarow });
       } else {
-        const timestamp = new Date().getTime();
-        const date = new Date(timestamp);
-        let today = date.toLocaleString("sv");
-        date.setDate(date.getDate() + 1);
-        let tommarow = date.toLocaleString("sv");
-
-        // unblocking user after 24 Hours ends
-
-        if (today === tommarow) {
-          await SignupModel.updateOne(
-            { email },
-            { $set: { maxAttempt: 5, blockedTill: null } }
-          );
-        }
-
-        // blocking user for 24 hours
-        else {
-          await SignupModel.updateOne(
-            { email },
-            { $set: { blockedTill: tommarow } }
-          );
-        }
-
-        res.send({ msg: "user blocked", blockedTill: user.blockedTill });
+        res.send({ msg: "invalid credentials" });
       }
     }
   } else {

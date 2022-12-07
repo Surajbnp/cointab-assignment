@@ -1,8 +1,41 @@
-import React from "react";
-import { Box, Input, Button, Text } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Input, Button, Text, Spinner } from "@chakra-ui/react";
 import styles from "../styles/login.module.css";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const [loader, setLoader] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const handleLogin = () => {
+    setLoader(true);
+    const payload = {
+      email: email,
+      password: password,
+    };
+    axios
+      .post(
+        "https://backend-production-e074.up.railway.app/auth/login",
+        payload
+      )
+      .then((res) => {
+        setMsg(res.data)
+        setLoader(false)
+        localStorage.setItem("cointab_token", res.data.token);
+        localStorage.setItem("useremail", res.data.useremail)
+        navigate("/")
+      })
+      .catch((err) => {
+        setLoader(false)
+      });
+  };
+
   return (
     <Box className={styles.container}>
       <Box>
@@ -10,16 +43,31 @@ const Login = () => {
         <form>
           <Box>
             <label>Email</label>
-            <Input placeholder="enter email" />
+            <Input
+              placeholder="enter email"
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </Box>
           <Box>
             <label>Password</label>
-            <Input placeholder="enter password" />
+            <Input
+              placeholder="enter password"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </Box>
-          <Box textAlign={'center'}>
-            <Button colorScheme='green'>Login</Button>
+          {msg.blockedTill ? (
+            <Text fontSize='12px' color='red' p='5px'>{`user blocked till ${msg.blockedTill}`}</Text>
+          ) : null}
+
+          <Box textAlign={"center"}>
+            <Button colorScheme="green" onClick={handleLogin}>
+              {loader ? <Spinner /> : "Login"}
+            </Button>
           </Box>
         </form>
+        <ToastContainer />
       </Box>
     </Box>
   );

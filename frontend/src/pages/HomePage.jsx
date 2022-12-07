@@ -1,8 +1,26 @@
-import { Avatar, Box, Button, Text } from "@chakra-ui/react";
-import React from "react";
+import { Avatar, Box, Button, LinkOverlay, Text } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
 import styles from "../styles/homepage.module.css";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  let token = localStorage.getItem("cointab_token");
+  let useremail = localStorage.getItem("useremail");
+  const [email, setEmail] = useState();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.setItem("cointab_token", '');
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    if(!token){
+      console.log('first')
+      navigate("/login")
+    }
+  },[navigate])
+
   return (
     <Box>
       <Box className={styles.container}>
@@ -12,10 +30,12 @@ const HomePage = () => {
           </Box>
           <Box>
             <Text fontSize="25px">Email</Text>
-            <Text>surajguptabnp14c@gmail.com</Text>
+            <Text>{useremail}</Text>
           </Box>
           <Box>
-            <Button colorScheme="green">Logout</Button>
+            <Button colorScheme="green" onClick={handleLogout}>
+              Logout
+            </Button>
           </Box>
         </Box>
       </Box>
